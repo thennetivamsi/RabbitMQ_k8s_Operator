@@ -1,0 +1,33 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: rabbit-gw
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    -  rabbit.mq.local
+    port:
+      name: rabbitmq-ui-port
+      number: 5051
+      protocol: TCP
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: rabbit-vs
+spec:
+  gateways:
+  - rabbit-gw
+  hosts:
+  -  rabbit.mq.local
+  tcp:
+  - match:
+    - port: 5051
+    route:
+    - destination:
+        host: rabbitmqcluster-prod
+        port:
+          number: 15672
+
