@@ -44,9 +44,6 @@ kind: RabbitmqCluster
 metadata:
   name: rabbitmqcluster-prod
 spec:
-  persistence:
-    storage: 1Gi
-    storageClassName: nfs-csi
   replicas: 3
   resources:
     requests:
