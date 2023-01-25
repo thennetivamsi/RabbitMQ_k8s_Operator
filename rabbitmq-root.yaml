@@ -1,0 +1,80 @@
+#its used to TATA cluster its works
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: rabbitmqcluster-prod
+spec:
+  persistence:
+    storage: 1Gi
+    storageClassName: nfs-csi
+  replicas: 3
+  resources: 
+    requests:
+      cpu: 250m
+      memory: 600m
+    limits:
+      cpu: 600m
+      memory: 1Gi
+  override:
+    statefulSet:
+      spec:
+        template:
+          spec:
+            securityContext: {}
+            containers: []
+            initContainers:
+            - name: setup-container
+              securityContext: 
+                runAsUser: 0
+  rabbitmq:
+          additionalConfig: |
+                  log.console.level = debug
+                  log.console = true
+                  log.dir = /var/log/rabbitmq
+                  log.file = pleasework.log
+
+
+
+  # tls:
+  #   secretName: tls-secret 
+
+#its used EKS cluster its works
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: rabbitmqcluster-prod
+spec:
+  persistence:
+    storage: 1Gi
+    storageClassName: nfs-csi
+  replicas: 3
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1
+      memory: 2Gi
+  override:
+    statefulSet:
+      spec:
+        template:
+          spec:
+            securityContext: {}
+            containers: []
+            initContainers:
+            - name: setup-container
+              securityContext:
+                runAsUser: 0
+
+Access The Management UI (Next, let's access the Management UI.)
+username="$(kubectl get secret rabbitmqcluster-prod-default-user -n rabbitmq-system -o jsonpath='{.data.username}' | base64 --decode)"
+echo "username: $username"
+#(default_user_ENUoQqv2MtBHs-xRStL )
+password="$(kubectl get secret rabbitmqcluster-prod-default-user -n rabbitmq-system -o jsonpath='{.data.password}' | base64 --decode)"
+echo "password: $password"
+#(password: RP8Epn_Xd9I71LoHTrWE5i9j3KeuwzE6)
+
+kubectl port-forward "service/rabbitmqcluster-prod" 15672
+
+
